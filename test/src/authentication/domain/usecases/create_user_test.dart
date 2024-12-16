@@ -1,10 +1,40 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:tdd_bloc/src/authentication/domain/repositories/authentication_repository.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:tdd_bloc/src/authentication/domain/usecases/create_user.dart';
+import 'authentication_repository.mock.dart';
 
-class MockAuthRepo extends Mock implements AuthenticationRepository{
+void main() {
+  late CreateUser usecase;
+  late AuthenticationRepository repository;
 
-}
+  setUp(() {
+    repository = MockAuthRepo();
+    usecase = CreateUser(repository);
+  });
 
-void main(){
-  
+  const params = CreateUserParams.empty();
+
+  test("Should call the [AuthRepo.createUser]", () async {
+    //Arrange
+    //STUB
+    when(() => repository.createUser(
+          createdAt: any(named: 'createdAt'), // Correct parameter name
+          name: any(named: 'name'), // Correct parameter name
+          avatar: any(named: 'avatar'), // Correct parameter name
+        )).thenAnswer((_) async => const Right(null));
+
+    //Act
+    final result = await usecase(params);
+
+    //Assert
+    expect(result, equals(const Right<dynamic, void>(null)));
+    verify(() => repository.createUser(
+        createdAt: params.createdAt,
+        name: params.name,
+        avatar: params.avatar)).called(1);
+
+    verifyNoMoreInteractions(repository);
+  });
 }
