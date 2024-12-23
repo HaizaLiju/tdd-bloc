@@ -20,9 +20,9 @@ void main() {
     //Arrange
     //STUB
     when(() => repository.createUser(
-          createdAt: any(named: 'createdAt'), // Correct parameter name
-          name: any(named: 'name'), // Correct parameter name
-          avatar: any(named: 'avatar'), // Correct parameter name
+        id: any(named: 'id'),
+        username: any(named: 'username'),
+        email: any(named: 'email') // Correct parameter name
         )).thenAnswer((_) async => const Right(null));
 
     //Act
@@ -31,9 +31,9 @@ void main() {
     //Assert
     expect(result, equals(const Right<dynamic, void>(null)));
     verify(() => repository.createUser(
-        createdAt: params.createdAt,
-        name: params.name,
-        avatar: params.avatar)).called(1);
+        id: params.id,
+        username: params.username,
+        email: params.email)).called(1);
 
     verifyNoMoreInteractions(repository);
   });

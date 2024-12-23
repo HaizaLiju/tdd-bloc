@@ -11,11 +11,12 @@ class AuthenticationRepositoriesImplementation
   const AuthenticationRepositoriesImplementation(this._remoteDataSource);
 
   final AuthenticationRemoteDataSource _remoteDataSource;
+
   @override
   ResultVoid createUser(
-      {required String createdAt,
-      required String name,
-      required String avatar}) async {
+      {required String id,
+      required String username,
+      required String email}) async {
     // Test - Driven Development
     // call the remote data source
     // check if method return the proper data
@@ -24,7 +25,7 @@ class AuthenticationRepositoriesImplementation
 
     try {
       await _remoteDataSource.createUser(
-          createdAt: createdAt, name: name, avatar: avatar);
+          id: id, username: username, email: email);
       return Right(null);
     } on APIException catch (e) {
       return Left(ApiFailure(message: e.message, statusCode: e.statusCode));

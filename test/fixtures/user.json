@@ -1,8 +1,7 @@
 [
-    {
-        "id": "1",
-        "createdAt": "_empty.createdAt",
-        "avatar": "_empty.avatar",
-        "name": "_empty.name"
-    }
+  {
+    "id": "1",
+    "username": "_empty.username",
+    "email": "_empty.email"
+  }
 ]

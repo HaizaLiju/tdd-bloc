@@ -13,6 +13,10 @@ dependencies:
   dartz: ^0.10.1
   mocktail: ^1.0.4
   http: ^1.2.2
+  flutter_bloc: ^8.1.6
+  bloc: ^8.1.4
+  bloc_test: ^9.1.7
+  get_it: ^8.0.3
 
 dev_dependencies:
   flutter_test:

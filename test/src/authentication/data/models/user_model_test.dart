@@ -7,7 +7,8 @@ import '../../../../fixtures/fixture_reader.dart';
 void main() {
   const tModel = UserModel.empty();
   final tJson = fixture('user.json');
-  final List<dynamic> tList = jsonDecode(tJson) as List<dynamic>; // Parse as array
+  final List<dynamic> tList =
+      jsonDecode(tJson) as List<dynamic>; // Parse as array
   final tMap = tList.first as Map<String, dynamic>; // Extract first object
 
   test('should be a subclass of [User] entity', () {
@@ -46,24 +47,20 @@ void main() {
     test('should return a [Json] string with right data', () {
       // Act
       final result = tModel.toJson();
-      final tJson = jsonEncode({
-        "id": "1",
-        "avatar": "_empty.avatar",
-        "createdAt": "_empty.createdAt",
-        "name": "_empty.name"
-      });
+      final tJson = jsonEncode(
+          {"id": "1", "username": "_empty.username", "email": "_empty.email"});
       // Assert
       expect(result, tJson);
     });
   });
 
   group('copyWith', () {
-    test('should return a [UserModel] with different data', (){
+    test('should return a [UserModel] with different data', () {
       //Arrange
 
       //Act
-      final result = tModel.copyWith(name: 'Logan');
-      expect(result.name, equals('Logan'));
+      final result = tModel.copyWith(username: 'Logan');
+      expect(result.username, equals('Logan'));
     });
   });
 }

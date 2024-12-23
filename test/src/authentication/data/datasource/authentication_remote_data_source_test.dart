@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:tdd_bloc/core/errors/exceptions.dart';
 import 'package:tdd_bloc/core/utils/constrants.dart';
 import 'package:tdd_bloc/src/authentication/data/datasource/authentication_remote_data_source.dart';
+import 'package:tdd_bloc/src/authentication/data/models/user_model.dart';
 
 class MockClient extends Mock implements http.Client {}
 
@@ -27,14 +27,14 @@ void main() {
       );
 
       final methodCall = remoteDataSource.createUser;
-      expect(methodCall(createdAt: 'createdAt', name: 'name', avatar: 'avatar'),
+      expect(methodCall(id: 'id', username: 'username', email: 'email'),
           completes);
 
       verify(
         () => client.post(
-          Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+          Uri.http(kBaseUrl, kCreateUserEndpoint),
           body: jsonEncode(
-              {'createdAt': 'createdAt', 'name': 'name', 'avatar': 'avatar'}),
+              {'id': 'id', 'username': 'username', 'email': 'email'}),
         ),
       ).called(1);
 
@@ -49,11 +49,66 @@ void main() {
         final methodCall = remoteDataSource.createUser;
 
         expect(
-            () => methodCall,
-            throwsA(APIException(
+            () async =>
+                methodCall(id: 'id', username: 'username', email: 'email'),
+            throwsA(const APIException(
                 message: 'Invalid email address', statusCode: 400)));
+
+        verify(
+          () => client.post(
+            Uri.http(kBaseUrl, kCreateUserEndpoint),
+            body: jsonEncode(
+                {'id': 'id', 'username': 'username', 'email': 'email'}),
+          ),
+        ).called(1);
+
+        verifyNoMoreInteractions(client);
       },
     );
-    verifyNoMoreInteractions(client);
   });
+
+  group(
+    'getUsers',
+    () {
+      const tUsers = [UserModel.empty()];
+      test(
+        'should return [List<User>] when the status code is 200',
+        () async {
+          when(() => client.get(any())).thenAnswer(
+            (_) async => http.Response(jsonEncode([tUsers.first.toMap()]), 200),
+          );
+
+          final result = await remoteDataSource.getUsers();
+
+          expect(result, equals(tUsers));
+
+          verify(() => client.get(Uri.http(kBaseUrl, kGetUserEndpoint)))
+              .called(1);
+
+          verifyNoMoreInteractions(client);
+        },
+      );
+
+      test('should return [APIException] when the status code is 200',
+          () async {
+        const tMessage = 'Mao Phac Server Sap CMNR';
+        when(() => client.get(any())).thenAnswer(
+          (_) async => http.Response(tMessage, 500),
+        );
+
+        final methodCall = remoteDataSource.getUsers;
+
+        expect(
+          () => methodCall(),
+          throwsA(
+            APIException(message: tMessage, statusCode: 500),
+          ),
+        );
+
+        verify(() => client.get(Uri.http(kBaseUrl, kGetUserEndpoint)))
+            .called(1);
+        verifyNoMoreInteractions(client);
+      });
+    },
+  );
 }

@@ -11,9 +11,9 @@ class MockAuthRemoteDataSrc extends Mock
     implements AuthenticationRemoteDataSource {}
 
 void main() {
-  const createdAt = 'tp.createdAt';
-  const name = 'tp.name';
-  const avatar = 'tp.avatar';
+  const id = 'tp.id';
+  const username = 'tp.username';
+  const email = 'tp.email';
   late AuthenticationRemoteDataSource remoteDataSource;
   late AuthenticationRepositoriesImplementation repoImpl;
 
@@ -31,20 +31,22 @@ void main() {
       'and complete successful when call to the remote source is successful',
       () async {
         //Arrange
-        when(() => remoteDataSource.createUser(
-                createdAt: any(named: 'createdAt'),
-                name: any(named: 'name'),
-                avatar: any(named: 'avatar')))
-            .thenAnswer((_) async => Future.value());
+        when(
+          () => remoteDataSource.createUser(
+            id: any(named: 'id'),
+            username: any(named: 'username'),
+            email: any(named: 'email'),
+          ),
+        ).thenAnswer((_) async => Future.value());
 
         //Act
-        final result = await repoImpl.createUser(
-            createdAt: createdAt, name: name, avatar: avatar);
+        final result =
+            await repoImpl.createUser(id: id, username: username, email: email);
 
         //Assert
         expect(result, equals(const Right(null)));
         verify(() => remoteDataSource.createUser(
-            createdAt: createdAt, name: name, avatar: avatar)).called(1);
+            id: id, username: username, email: email)).called(1);
         verifyNoMoreInteractions(remoteDataSource);
       },
     );
@@ -53,16 +55,16 @@ void main() {
         'when the call to the remote source is unsuccessful', () async {
       when(
         () => remoteDataSource.createUser(
-          createdAt: any(named: 'createdAt'),
-          name: any(named: 'name'),
-          avatar: any(named: 'avatar'),
+          id: any(named: 'id'),
+          username: any(named: 'username'),
+          email: any(named: 'email'),
         ),
       ).thenThrow(
         tException,
       );
 
-      final result = await repoImpl.createUser(
-          createdAt: createdAt, name: name, avatar: avatar);
+      final result =
+          await repoImpl.createUser(id: id, username: username, email: email);
 
       expect(
         result,
@@ -74,7 +76,7 @@ void main() {
         ),
       );
       verify(() => remoteDataSource.createUser(
-          createdAt: createdAt, name: name, avatar: avatar)).called(1);
+          id: id, username: username, email: email)).called(1);
       verifyNoMoreInteractions(remoteDataSource);
     });
   });
@@ -87,9 +89,9 @@ void main() {
         when(() => remoteDataSource.getUsers()).thenAnswer(
           (_) async => [],
         );
-        
+
         final result = await repoImpl.getUsers();
-        
+
         expect(result, isA<Right<dynamic, List<User>>>());
         verify(() => remoteDataSource.getUsers()).called(1);
         verifyNoMoreInteractions(remoteDataSource);
@@ -98,10 +100,10 @@ void main() {
 
     test(
       'should return a [APIFailure] '
-          'when the call to the remote source is unsuccessful',
-          () async {
+      'when the call to the remote source is unsuccessful',
+      () async {
         when(() => remoteDataSource.getUsers()).thenThrow(
-              tException,
+          tException,
         );
 
         final result = await repoImpl.getUsers();
